@@ -8,6 +8,9 @@ from django.dispatch import receiver
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     otp = models.IntegerField(null=True,blank=True)
+    mobile = models.CharField(max_length=50,null=True,blank=True)
+    address = models.TextField(null=True,blank=True)
+    rooms_uploaded = models.IntegerField(null=True,blank=True)
 
     def __str__(self):
         return f"User {self.user.username}  ({self.user.pk}) "
