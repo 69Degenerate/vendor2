@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('get_all_users/', get_all_users),
     path('get_user_details/<int:user_id>/', get_user_details),
+    path('get_rooms/', get_rooms),
 ]

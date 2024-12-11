@@ -61,3 +61,46 @@ def get_user_details(request, user_id):
 
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found."}, status=404)
+
+@api_view(["GET"])
+def get_rooms(request):
+    rooms = Room.objects.all()
+    room_list = [
+        {
+            "id": room.pk,
+            "title": room.title,
+            "type": room.type,
+            "price": room.price,
+            "thumbnail": room.thumbnail,
+            "vendor":room.user.pk,
+            "location": {
+                "area": "Baner Hills",
+                "city": "Pune",
+                "distance_to_metro": 2.5,
+                "landmark": "Near Prosperity Mall",
+            },
+            "specifications": {
+                "furnishing": "fully_furnished",
+                "carpet_area": "950 sqft",
+                "preferred_tenants": ["family"],
+                "available_from": "next_month",
+                "floor": "15th of 20",
+            },
+            "amenities": [
+                "AC",
+                "Geyser",
+                "TV",
+                "Fridge",
+                "Washing Machine",
+                "Microwave",
+                "Gym Access",
+                "Swimming Pool",
+                "Club House",
+            ],
+            "ratings": {"overall": 4.8, "total_reviews": 45},
+            "tags": ["premium", "family_friendly", "fully_furnished"],
+        }
+        for room in rooms
+    ]
+    response = {"status": "success", "count": len(room_list), "rooms": room_list}
+    return Response(response)
