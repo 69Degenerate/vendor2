@@ -43,7 +43,6 @@ def get_all_users(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
-
 @api_view(["GET"])
 def get_user_details(request, user_id):
     try:
@@ -70,6 +69,75 @@ def get_user_details(request, user_id):
 
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found."}, status=404)
+
+@api_view(["POST"])
+def create_user_hr(request):
+    try:
+        with transaction.atomic():
+            data = request.data
+            first_name=data['firstName']
+            last_name=data['lastName']
+            username = data.get('email')
+            email = data.get('email')
+            password = data.get('password')
+            if not all([username, email, password]):
+                return JsonResponse({"error": "Username, email, and password are required."}, status=400)
+            if User.objects.filter(username=username).exists():
+                return JsonResponse({"error": "User with this username already exists."}, status=400)
+            user = User.objects.create_user(username=username, email=email, password=password,first_name=first_name,last_name=last_name)
+            address = data.get('address')
+            user.profile.address = f"{address['street']}, {address['city']}, {address['state']} {address['zipCode']}, {address['country']}"
+            user.profile.save()
+            return JsonResponse(
+                {
+                    "ownerId": user.pk,
+                    "status": "success",
+                    "message": "Owner registration successful",
+                    "timestamp": user.date_joined,
+                    "verificationStatus": "pending",
+                },
+                status=200,
+            )
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+@api_view(["POST"])
+def update_user(request, ownerId):
+    try:
+        with transaction.atomic():
+            data = request.data
+            user = User.objects.get(id=ownerId)
+            username = data.get('username', user.username)
+            email = data.get('email', user.email)
+            first_name = data.get('firstName', user.first_name)
+            last_name = data.get('lastName', user.last_name)
+            is_active = data.get('is_active', user.is_active)
+            user.username = username
+            user.email = email
+            user.first_name = first_name
+            user.last_name = last_name
+            user.is_active = is_active
+            user.save()
+            address = data.get('address')
+            user.profile.address = f"{address['street']}, {address['city']}, {address['state']} {address['zipCode']}, {address['country']}"
+            user.profile.save()
+            return JsonResponse(
+                {
+                    "ownerId": user.pk,
+                    "status": "success",
+                    "message": "Owner registration successful",
+                    "timestamp":user.date_joined,
+                    "verificationStatus": "pending",
+                },
+                status=200,
+            )
+
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User not found."}, status=404)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
 
 @api_view(["GET"])
 def get_rooms(request):

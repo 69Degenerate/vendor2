@@ -19,7 +19,12 @@ from django.urls import path
 from user.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+
     path('get_all_users/', get_all_users),
     path('get_user_details/<int:user_id>/', get_user_details),
+    path('create_user_hr/', create_user_hr),
+    path('update_user/<int:ownerId>/', update_user),
+
     path('get_rooms/', get_rooms),
 ]
