@@ -26,6 +26,15 @@ def get_all_users(request):
                 "date_joined": user.date_joined,
                 "is_active": user.is_active,
                 "full_name": user.first_name,
+                "mobile": user.profile.mobile,
+                "address": user.profile.address,
+                "rooms_uploaded": user.profile.rooms_uploaded,
+                "social": [
+                    {"label": "instagram", "value": "#"},
+                    {"label": "twitter", "value": "#"},
+                    {"label": "youtube", "value": "#"},
+                ],
+                "groups": [group.name for group in user.groups.all()],
             }
             for user in users
         ]
